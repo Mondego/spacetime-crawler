@@ -1,9 +1,3 @@
-#!/usr/bin/python
-'''
-Created on Oct 21, 2016
-@author: Rohan Achar
-'''
-
 import logging
 import logging.handlers
 import os
@@ -13,8 +7,46 @@ import uuid
 
 sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "../..")))
 
+from datamodel.search.{1}_datamodel import {0}ProjectionLink
+from spacetime.client.IApplication import IApplication
+from spacetime.client.declarations import Getter
+from lxml import html,etree
+import re, os
+from time import time
+from uuid import uuid4
+
+from urlparse import urlparse, parse_qs
+from uuid import uuid4
 from spacetime.client.frame import frame
-from applications.search.crawler_frame import CrawlerFrame
+logger = logging.getLogger(__name__)
+LOG_HEADER = "[CHECKFRONTIER]"
+
+@Getter({0}ProjectionLink)
+class CheckFrontierFrame(IApplication):
+
+    def __init__(self, frame):
+        self.starttime = time()
+        self.app_id = "{0}"
+        self.frame = frame
+
+
+    def initialize(self):
+        pass
+
+    def update(self):
+        ls = self.frame.get({0}ProjectionLink)
+        with open("frontier_summary.txt", "w") as f:
+            f.write("url\tdownload_complete\n")
+            for l in ls:
+                try:
+                    f.write("%s\t%s\n" % (l.url, "complete" if l.download_complete else "incomplete"))
+                except UnicodeError:
+                    print "Unicode error when writing to file for url: ", l.url, "status: ", "complete" if l.download_complete else "incomplete"
+        print "Wrote the status to frontier_summary.txt"
+        self.done = True
+
+    def shutdown(self):
+        pass
 
 logger = None
 
@@ -26,8 +58,8 @@ class Simulation(object):
         '''
         Constructor
         '''
-        frame_c = frame(address = "http://" + address + ":" + str(port) + "/", time_step = 2000)
-        frame_c.attach_app(CrawlerFrame(frame_c))
+        frame_c = frame(address = "http://" + address + ":" + str(port) + "/", time_step = 1000)
+        frame_c.attach_app(CheckFrontierFrame(frame_c))
 
         frame_c.run_async()
         frame.loop()

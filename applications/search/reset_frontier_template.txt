@@ -1,9 +1,3 @@
-#!/usr/bin/python
-'''
-Created on Oct 21, 2016
-@author: Rohan Achar
-'''
-
 import logging
 import logging.handlers
 import os
@@ -13,8 +7,45 @@ import uuid
 
 sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "../..")))
 
+from datamodel.search.{1}_datamodel import {0}ProjectionLink
+from spacetime.client.IApplication import IApplication
+from spacetime.client.declarations import Deleter, Getter
+from lxml import html,etree
+import re, os
+from time import time
+from uuid import uuid4
+
+from urlparse import urlparse, parse_qs
+from uuid import uuid4
 from spacetime.client.frame import frame
-from applications.search.crawler_frame import CrawlerFrame
+
+logger = logging.getLogger(__name__)
+LOG_HEADER = "[DELETEFRONTIER]"
+
+@Deleter({0}ProjectionLink)
+@Getter({0}ProjectionLink)
+class DeleteFrontierFrame(IApplication):
+
+    def __init__(self, frame):
+        self.starttime = time()
+        self.app_id = "{0}"
+        self.frame = frame
+
+
+    def initialize(self):
+        pass
+
+    def update(self):
+        print "Deleting links. This might take a while."
+        ls = self.frame.get({0}ProjectionLink)
+        print "Found ", len(ls), " links to delete."
+        for l in ls:
+            self.frame.delete({0}ProjectionLink, l)
+        print "Deleted all links."
+        self.done = True
+
+    def shutdown(self):
+        pass
 
 logger = None
 
@@ -26,8 +57,8 @@ class Simulation(object):
         '''
         Constructor
         '''
-        frame_c = frame(address = "http://" + address + ":" + str(port) + "/", time_step = 2000)
-        frame_c.attach_app(CrawlerFrame(frame_c))
+        frame_c = frame(address = "http://" + address + ":" + str(port) + "/", time_step = 1000)
+        frame_c.attach_app(DeleteFrontierFrame(frame_c))
 
         frame_c.run_async()
         frame.loop()
