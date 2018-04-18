@@ -1,4 +1,5 @@
 from spacetime.common.crawler_generator import generate
+
 ids, nos = zip(*(l.strip().split(",") for l in open("team.txt") if l and not l.strip().startswith("#")))
 print "Student IDs provided:", ids
 print "Student numbers provided:", nos

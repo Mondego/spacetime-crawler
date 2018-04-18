@@ -1,7 +1,7 @@
 import logging
-from datamodel.search.{1}_datamodel import {0}Link, One{0}UnProcessedLink, add_server_copy, get_downloaded_content
+from datamodel.search.{1}_datamodel import {0}Link, One{0}UnProcessedLink
 from spacetime.client.IApplication import IApplication
-from spacetime.client.declarations import Producer, GetterSetter, Getter, ServerTriggers
+from spacetime.client.declarations import Producer, GetterSetter, Getter
 from lxml import html,etree
 import re, os
 from time import time
@@ -15,8 +15,8 @@ LOG_HEADER = "[CRAWLER]"
 
 @Producer({0}Link)
 @GetterSetter(One{0}UnProcessedLink)
-@ServerTriggers(add_server_copy, get_downloaded_content)
 class CrawlerFrame(IApplication):
+    app_id = "{0}"
 
     def __init__(self, frame):
         self.starttime = time()

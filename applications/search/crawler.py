@@ -12,8 +12,9 @@ import argparse
 import uuid
 
 sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "../..")))
-
-from spacetime.client.frame import frame
+from spacetime.connectors.spacetime import ObjectlessSpacetimeConnection
+from rtypes.dataframe.dataframe_client import dataframe_client
+from spacetime.client.frame import ClientFrame
 from applications.search.crawler_frame import CrawlerFrame
 
 logger = None
@@ -26,11 +27,20 @@ class Simulation(object):
         '''
         Constructor
         '''
-        frame_c = frame(address = "http://" + address + ":" + str(port) + "/", time_step = 2000)
+
+        objectless_connector = ObjectlessSpacetimeConnection(
+            CrawlerFrame.app_id,
+            address = "http://" + address + ":" + str(port) + "/",
+            debug=True)
+
+        frame_c = ClientFrame(
+            objectless_connector,
+            dataframe_client(),
+            time_step=500)
+
         frame_c.attach_app(CrawlerFrame(frame_c))
 
-        frame_c.run_async()
-        frame.loop()
+        frame_c.run_main()
 
 def SetupLoggers():
     global logger
