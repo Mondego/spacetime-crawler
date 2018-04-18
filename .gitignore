@@ -1,1 +1,9 @@
 *.pyc
+rtypes/
+spacetime/
+*.json
+back.py
+applications/search/check_frontier.py
+applications/search/crawler_frame.py
+applications/search/reset_frontier.py
+datamodel/search/*_datamodel.py

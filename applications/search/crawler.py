@@ -29,14 +29,13 @@ class Simulation(object):
         '''
 
         objectless_connector = ObjectlessSpacetimeConnection(
-            CrawlerFrame.app_id,
-            address = "http://" + address + ":" + str(port) + "/",
-            debug=True)
+            "CrawlerFrame_{0}".format(CrawlerFrame.app_id),
+            address = "http://" + address + ":" + str(port) + "/")
 
         frame_c = ClientFrame(
             objectless_connector,
             dataframe_client(),
-            time_step=500)
+            time_step=2000)
 
         frame_c.attach_app(CrawlerFrame(frame_c))
 

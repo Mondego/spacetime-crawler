@@ -26,14 +26,22 @@ class CrawlerFrame(IApplication):
 
     def initialize(self):
         self.count = 0
-        l = {0}Link("http://www.ics.uci.edu/")
-        print l.full_url
-        self.frame.add(l)
+        links = self.frame.get_new(One{0}UnProcessedLink)
+        if len(links) > 0:
+            print "Resuming from the previous state."
+            self.download_links(links)
+        else:
+            l = {0}Link("http://www.ics.uci.edu/")
+            print l.full_url
+            self.frame.add(l)
 
     def update(self):
-        unprocessed_links = self.frame.get(One{0}UnProcessedLink)
+        unprocessed_links = self.frame.get_new(One{0}UnProcessedLink)
         if unprocessed_links:
-            link = unprocessed_links[0]
+            self.download_links(unprocessed_links)
+
+    def download_links(self, unprocessed_links):
+        for link in unprocessed_links:
             print "Got a link to download:", link.full_url
             downloaded = link.download()
             links = extract_next_links(downloaded)
@@ -76,8 +84,9 @@ def is_valid(url):
             + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
             + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
             + "|thmx|mso|arff|rtf|jar|csv"\
-            + "|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
         return False
+
