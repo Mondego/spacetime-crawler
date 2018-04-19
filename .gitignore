@@ -6,4 +6,5 @@ back.py
 applications/search/check_frontier.py
 applications/search/crawler_frame.py
 applications/search/reset_frontier.py
+applications/search/delete_invalids_from_frontier.py
 datamodel/search/*_datamodel.py

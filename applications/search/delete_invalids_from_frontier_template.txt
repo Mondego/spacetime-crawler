@@ -13,16 +13,16 @@ from spacetime.client.declarations import Deleter, Getter
 from spacetime.connectors.spacetime import ObjectlessSpacetimeConnection
 from rtypes.dataframe.dataframe_client import dataframe_client
 from spacetime.client.frame import ClientFrame
-from applications.search.crawler_frame import CrawlerFrame
+from applications.search.crawler_frame import CrawlerFrame, is_valid
 
 logger = logging.getLogger(__name__)
-LOG_HEADER = "[CHECKFRONTIER]"
+LOG_HEADER = "[DELETEFRONTIER]"
 
+@Deleter({0}Link)
 @Getter({0}Link)
-class CheckFrontierFrame(IApplication):
+class DeleteFrontierFrame(IApplication):
 
     def __init__(self, frame):
-        self.starttime = time()
         self.app_id = "{0}"
         self.frame = frame
 
@@ -31,19 +31,19 @@ class CheckFrontierFrame(IApplication):
         pass
 
     def update(self):
+        print "Deleting invalid links. This might take a while."
         ls = self.frame.get({0}Link)
-        with open("frontier_summary.txt", "w") as f:
-            f.write("url\tdownload_complete\n")
-            for l in ls:
-                try:
-                    f.write("%s\t%s\n" % (l.url, "complete" if l.download_complete else "incomplete"))
-                except UnicodeError:
-                    print "Unicode error when writing to file for url: ", l.url, "status: ", "complete" if l.download_complete else "incomplete"
-        print "Wrote the status to frontier_summary.txt"
+        print "Found ", len(ls), " links."
+        count = 0
+        for l in ls:
+            if not is_valid(l.full_url):
+                self.frame.delete({0}Link, l)
+                count += 1
+        print "Deleting", count, "links".
         self.done = True
 
     def shutdown(self):
-        pass
+        print "Deleted all invalid links."
 
 logger = None
 
@@ -56,14 +56,14 @@ class Simulation(object):
         Constructor
         '''
         objectless_connector = ObjectlessSpacetimeConnection(
-            "CheckFrontier_{0}".format(CrawlerFrame.app_id),
+            "ResetFrontier_{0}".format(CrawlerFrame.app_id),
             address = "http://" + address + ":" + str(port) + "/")
         frame_c = ClientFrame(
             objectless_connector,
             dataframe_client(),
             time_step=1000)
 
-        frame_c.attach_app(CheckFrontierFrame(frame_c))
+        frame_c.attach_app(DeleteFrontierFrame(frame_c))
         frame_c.run_main()
 
 def SetupLoggers():
