@@ -1,6 +1,4 @@
 *.pyc
-rtypes/
-spacetime/
 *.json
 back.py
 applications/search/check_frontier.py
