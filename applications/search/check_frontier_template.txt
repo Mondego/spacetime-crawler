@@ -22,7 +22,6 @@ LOG_HEADER = "[CHECKFRONTIER]"
 class CheckFrontierFrame(IApplication):
 
     def __init__(self, frame):
-        self.starttime = time()
         self.app_id = "{0}"
         self.frame = frame
 

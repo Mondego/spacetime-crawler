@@ -39,7 +39,7 @@ class DeleteFrontierFrame(IApplication):
             if not is_valid(l.full_url):
                 self.frame.delete({0}Link, l)
                 count += 1
-        print "Deleting", count, "links".
+        print "Deleting", count, "links."
         self.done = True
 
     def shutdown(self):

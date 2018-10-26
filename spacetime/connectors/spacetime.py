@@ -189,7 +189,7 @@ class ObjectlessSpacetimeConnection(object):
         self.host_to_all_types = dict()
         self.host_to_changelist = dict()
         self.wait_for_server = wait_for_server
-        self.debug = True
+        self.debug = debug
         self.app_id = app_id
         self.wire_format = wire_format
         self.default_address = address.rstrip("/") + "/"
