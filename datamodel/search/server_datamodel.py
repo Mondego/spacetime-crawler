@@ -201,7 +201,7 @@ class Link(object):
                         and urlresp.status_code > 199
                         and urlresp.status_code < 300):
                     return self.__ProcessUrlData(
-                        urlresp.text.encode("utf-8"), self.user_agent_string)
+                        urlresp.text, self.user_agent_string)
                 elif size >= MaxPageSize:
                     self.error_reason = "Size too large."
                     return UrlResponse(
